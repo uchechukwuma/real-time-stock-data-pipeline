@@ -1,0 +1,71 @@
+# Docker
+**/Dockerfile
+**/docker-compose.yml
+**/docker-compose.override.yml
+**/Dockerfile.*
+**/.docker/
+
+# Airflow logs and configurations
+**/airflow/logs/
+**/airflow/config/
+**/airflow/plugins/
+**/airflow/dags/
+**/.airflow/
+logs/
+
+# Python files
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+.pytest_cache/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE or Editor settings
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Python distribution packages
+*.egg
+*.egg-info/
+dist/
+build/
+
+# SQLAlchemy Migrations
+migrations/
+
+# Kubernetes config files
+*.yaml
+*.yml
+*.k8s
+
+# Local environment variables (ensure they are added securely elsewhere)
+.env
+.env.*
+*.env.local
+
+# Log files and temporary files
+*.log
+*.pid
+*.out
+*.bak
+*.tmp
+*.swp
+
+# Kafka related
+*.kafka
+*.kafkaconn
