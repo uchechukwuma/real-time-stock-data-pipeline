@@ -30,6 +30,23 @@ MAX_API_RETRIES = 3
 MAX_KAFKA_RETRIES = 3
 BASE_DELAY = 1  # seconds
 
+# Ensures required values are available, else it fails quickly
+required_env_vars = {
+    "KAFKA_BROKER": KAFKA_BROKER,
+    "KAFKA_TOPIC": KAFKA_TOPIC,
+    "ALPHAVANTAGE_API_KEY": API_KEY,
+    "STOCK_SYMBOL": SYMBOL,
+    "POSTGRES_HOST": POSTGRES_HOST,
+    "POSTGRES_DB": POSTGRES_DB,
+    "POSTGRES_USER": POSTGRES_USER,
+    "POSTGRES_PASSWORD": POSTGRES_PASSWORD
+}
+
+missing_vars = [var for var, val in required_env_vars.items() if not val]
+if missing_vars:
+    raise EnvironmentError(f"Missing required environment variables: {', '.join(missing_vars)}")
+
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
@@ -95,6 +112,17 @@ def fetch_stock_data() -> Optional[pd.DataFrame]:
 
 
 def send_to_kafka_with_retry(producer, topic, message):
+    # Dead Letter Queue (DLQ) to Handle Failed Kafka Sends
+    def write_to_dlq(message, filename="dlq_stock_messages.jsonl"):
+        try:
+            with open(filename, 'a') as f:
+                json.dump(message, f)
+                f.write('\n')  # Write in JSON Lines format
+            logger.warning("Message written to DLQ.")
+        except Exception as e:
+            logger.error(f"Failed to write message to DLQ: {e}")
+
+    
     for attempt in range(1, MAX_KAFKA_RETRIES + 1):
         try:
             future = producer.send(topic, message)
@@ -105,6 +133,7 @@ def send_to_kafka_with_retry(producer, topic, message):
             logger.warning(f"Kafka send attempt {attempt} failed. Retrying in {wait_time:.1f}s. Error: {e}")
             time.sleep(wait_time)
     logger.error(f"Failed to send message to Kafka after {MAX_KAFKA_RETRIES} attempts.")
+    write_to_dlq(message)
     return False
 
 def send_to_kafka():

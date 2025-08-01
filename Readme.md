@@ -19,6 +19,10 @@ This project sets up a real-time data pipeline using:
 - DAGs for scheduling and monitoring with Airflow
 - Redis broker used for CeleryExecutor
 
+⚠️ Data Streaming Note (Simulated Streaming)
+To simulate real-time data ingestion while avoiding API rate limits and financial costs, this project fetches historical stock data using the Alpha Vantage API (in CSV format). The Kafka producer sends this data to a Kafka topic record by record — simulating a real-time feed for demonstration purposes.
+
+This setup mimics the structure and behavior of a production-ready streaming system and can be easily adapted to consume live tick data or event streams in a real deployment.
 ---
 
 ## 📁 Project Structure
