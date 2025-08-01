@@ -84,12 +84,12 @@ AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth,airflow.api.auth
 AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK=true
 
 # === Airflow UI Login ===
-_AIRFLOW_WWW_USER_USERNAME=airflow
-_AIRFLOW_WWW_USER_PASSWORD=airflow
+_AIRFLOW_WWW_USER_USERNAME= xxxxxx
+_AIRFLOW_WWW_USER_PASSWORD= xxxxxx
 
 # === pgAdmin ===
 PGADMIN_DEFAULT_EMAIL=admin@admin.com
-PGADMIN_DEFAULT_PASSWORD=admin
+PGADMIN_DEFAULT_PASSWORD= xxxxxxx
 
 
 🛡️ Make sure to add .env to your .gitignore:
@@ -123,8 +123,8 @@ The first build might take a few minutes.
 | Redis (internal) | redis:6379                                     |
 
 Login to Airflow with:
-Username: airflow
-Password: airflow
+Username: xxxxxxxxx  -- 
+Password: xxxxxxxxx
 
 
 📊 Data Flow Summary
