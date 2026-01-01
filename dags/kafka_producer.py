@@ -153,9 +153,9 @@ def send_to_kafka():
             # Only keep rows with timestamp > latest timestamp in DB
            # df = df[df['timestamp'] > latest_db_ts]
 
-        if df.empty:
-            logger.info("No new data to send after filtering by latest DB timestamp.")
-            return
+        # if df.empty:
+        #     logger.info("No new data to send after filtering by latest DB timestamp.")
+        #     return
 
         logger.info(f"Sending {len(df)} new records to Kafka topic '{KAFKA_TOPIC}'")
 
@@ -167,7 +167,7 @@ def send_to_kafka():
             if send_to_kafka_with_retry(producer, KAFKA_TOPIC, message):
                 success_count += 1
                 if success_count <= 3:
-                    logger.info(f"✅ Sent: {message}")
+                    logger.info(f"-> Sent: {message}")
             else:
                 failure_count += 1
 

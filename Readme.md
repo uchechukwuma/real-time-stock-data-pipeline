@@ -26,7 +26,7 @@ This setup mimics the structure and behavior of a production-ready streaming sys
 ---
 
 ## 📁 Project Structure
-
+---text
 ├── dags/ # Airflow DAGs
 │  ├──  stock_dag.py
 │  ├──  kafka_producer.py # Python Kafka producer

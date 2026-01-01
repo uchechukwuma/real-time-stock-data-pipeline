@@ -40,13 +40,13 @@ def create_database_if_not_exists():
         exists = cursor.fetchone()
         if not exists:
             cursor.execute(f'CREATE DATABASE {POSTGRES_DB}')
-            logger.info(f"✅ Database '{POSTGRES_DB}' created.")
+            logger.info(f"-> Database '{POSTGRES_DB}' created.")
         else:
-            logger.info(f"ℹ️ Database '{POSTGRES_DB}' already exists.")
+            logger.info(f"-> Database '{POSTGRES_DB}' already exists.")
         cursor.close()
         conn.close()
     except Exception as e:
-        logger.error(f"❌ Failed to check/create database: {e}")
+        logger.error(f"-> Failed to check/create database: {e}")
 
 def get_postgres_connection():
     return psycopg2.connect(
@@ -77,12 +77,12 @@ def create_table_if_not_exists(conn, cursor):
             );
         """)
         conn.commit()
-        logger.info("✅ Table 'stock_prices' created.")
+        logger.info("-> Table 'stock_prices' created.")
     else:
         logger.info("ℹ️ Table 'stock_prices' already exists.")
 
 def signal_handler(sig, frame):
-    logger.info(f"📴 Signal {sig} received: Shutting down consumer gracefully...")
+    logger.info(f"-> Signal {sig} received: Shutting down consumer gracefully...")
     sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
@@ -106,7 +106,7 @@ def consume_data():
     try:
         for message in consumer:
             data = message.value
-            logger.info(f"📥 Received message: {data}")
+            logger.info(f"-> Received message: {data}")
             try:
                 cursor.execute("""
                     INSERT INTO stock_prices (timestamp, open, high, low, close, volume)
@@ -126,12 +126,12 @@ def consume_data():
                     data.get('volume')
                 ))
                 conn.commit()
-                logger.info("✅ Data inserted/updated in database.")
+                logger.info("-> Data inserted/updated in database.")
             except Exception as e:
-                logger.error(f"❌ DB insert failed for data {data}: {e}")
+                logger.error(f"-> DB insert failed for data {data}: {e}")
                 conn.rollback()
     except Exception as e:
-        logger.error(f"❌ Kafka consumer error: {e}")
+        logger.error(f"-> Kafka consumer error: {e}")
     finally:
         cursor.close()
         conn.close()
