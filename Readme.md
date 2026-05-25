@@ -1,5 +1,30 @@
 # 📈 Real-Time Stock Data Pipeline with Apache Airflow, Kafka, PostgreSQL, and Redis
 
+# Architecture Blueprint
+graph TD
+    subgraph Ingestion & Streaming
+        A[Alpha Vantage API] -- Historical CSV Data --> B[Kafka Producer Microservice]
+        B -- Publish Records --> C[Kafka Broker]
+    end
+
+    subgraph Persistence & Storage
+        C -- Subscribe & Pull Streams --> D[Kafka Consumer Microservice]
+        D -- Batched Writes --> E[(PostgreSQL Database)]
+    end
+
+    subgraph Orchestration & Workers
+        F[Apache Airflow] -- Directs Workflows --> G[Redis Celery Broker]
+        G -- Distributes Tasks --> H[Airflow Workers]
+        F -. Monitors & Health Checks .-> B
+        F -. Monitors & Health Checks .-> D
+    end
+
+    style A fill:#fff,stroke:#333,stroke-width:2px
+    style C fill:#fff,stroke:#231F20,stroke-width:2px
+    style E fill:#336791,stroke:#fff,stroke-width:1px,color:#fff
+    style F fill:#017CEB,stroke:#fff,stroke-width:1px,color:#fff
+    style G fill:#D82C20,stroke:#fff,stroke-width:1px,color:#fff
+
 This project sets up a real-time data pipeline using:
 
 - 🛰 **Apache Kafka** for streaming
@@ -8,8 +33,6 @@ This project sets up a real-time data pipeline using:
 - 🧠 **Redis** for message brokering
 - 🐍 **Python** apps for Kafka producer & consumer
 - 🐳 **Docker Compose** for containerization
-
----
 
 ## 📦 Features
 
@@ -27,18 +50,21 @@ This setup mimics the structure and behavior of a production-ready streaming sys
 
 ## 📁 Project Structure
 ---text
-├── dags/ # Airflow DAGs
-│  ├──  stock_dag.py
-│  ├──  kafka_producer.py # Python Kafka producer
-│  ├──  kafka_consumer.py # Python Kafka consumer
-├── Dockerfile.airflow # Custom Airflow Dockerfile
-├── Dockerfile.producer # Kafka producer Dockerfile
-├── Dockerfile.consumer # Kafka consumer Dockerfile
-├── stock_cache_2025-04-23 # sample output in csv
-├── docker-compose.yml # Multi-service Docker config
-├── .env # Environment config (not committed)
-└── README.md # This file
-
+📁 Project Structure
+├── dags/                     # Airflow Orchestration Layer
+│   └── kafka_pipeline_dag.py # Monitors microservice statuses
+├── services/
+│   ├── producer/             # Decoupled Producer Microservice
+│   │   ├── kafka_producer.py
+│   │   └── Dockerfile.producer
+│   └── consumer/             # Decoupled Consumer Microservice
+│       ├── kafka_consumer.py
+│       └── Dockerfile.consumer
+├── Dockerfile.airflow        # Custom Airflow Build Configuration
+├── docker-compose.yml        # Multi-container service infrastructure
+├── requirements.txt          # Shared Python dependencies
+├── .env.example              # Production safe template environment variables
+└── README.md
 
 ---
 

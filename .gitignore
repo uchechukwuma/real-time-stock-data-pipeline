@@ -1,9 +1,7 @@
 # Docker
-**/Dockerfile
-**/docker-compose.yml
+
 **/docker-compose.override.yml
-**/Dockerfile.*
-**/.docker/
+
 
 # Airflow logs and configurations
 **/airflow/logs/
@@ -49,8 +47,6 @@ build/
 migrations/
 
 # Kubernetes config files
-*.yaml
-*.yml
 *.k8s
 
 # Local environment variables (ensure they are added securely elsewhere)
