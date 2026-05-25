@@ -1,5 +1,34 @@
 # 📈 Real-Time Stock Data Pipeline with Apache Airflow, Kafka, PostgreSQL, and Redis
 
+# Architecture Blueprint
+### 🏗️ Architecture & Data Flow
+
+```mermaid
+graph TD
+    subgraph Ingestion & Streaming
+        A[Alpha Vantage API] -- Historical CSV Data --> B[Kafka Producer Microservice]
+        B -- Publish Records --> C[Kafka Broker]
+    end
+
+    subgraph Persistence & Storage
+        C -- Subscribe & Pull Streams --> D[Kafka Consumer Microservice]
+        D -- Batched Writes --> E[(PostgreSQL Database)]
+    end
+
+    subgraph Orchestration & Workers
+        F[Apache Airflow] -- Directs Workflows --> G[Redis Celery Broker]
+        G -- Distributes Tasks --> H[Airflow Workers]
+        F -. Monitors & Health Checks .-> B
+        F -. Monitors & Health Checks .-> D
+    end
+
+    style A fill:#fff,stroke:#333,stroke-width:2px
+    style C fill:#fff,stroke:#231F20,stroke-width:2px
+    style E fill:#336791,stroke:#fff,stroke-width:1px,color:#fff
+    style F fill:#017CEB,stroke:#fff,stroke-width:1px,color:#fff
+    style G fill:#D82C20,stroke:#fff,stroke-width:1px,color:#fff
+```
+
 This project sets up a real-time data pipeline using:
 
 - 🛰 **Apache Kafka** for streaming
@@ -8,8 +37,6 @@ This project sets up a real-time data pipeline using:
 - 🧠 **Redis** for message brokering
 - 🐍 **Python** apps for Kafka producer & consumer
 - 🐳 **Docker Compose** for containerization
-
----
 
 ## 📦 Features
 
@@ -26,22 +53,23 @@ This setup mimics the structure and behavior of a production-ready streaming sys
 ---
 
 ## 📁 Project Structure
----text
-├── dags/ # Airflow DAGs
-│  ├──  stock_dag.py
-│  ├──  kafka_producer.py # Python Kafka producer
-│  ├──  kafka_consumer.py # Python Kafka consumer
-├── Dockerfile.airflow # Custom Airflow Dockerfile
-├── Dockerfile.producer # Kafka producer Dockerfile
-├── Dockerfile.consumer # Kafka consumer Dockerfile
-├── stock_cache_2025-04-23 # sample output in csv
-├── docker-compose.yml # Multi-service Docker config
-├── .env # Environment config (not committed)
-└── README.md # This file
 
-
----
-
+```text
+├── dags/                     # Airflow Orchestration Layer
+│   └── kafka_pipeline_dag.py # Monitors microservice statuses
+├── services/
+│   ├── producer/             # Decoupled Producer Microservice
+│   │   ├── kafka_producer.py
+│   │   └── Dockerfile.producer
+│   └── consumer/             # Decoupled Consumer Microservice
+│       ├── kafka_consumer.py
+│       └── Dockerfile.consumer
+├── Dockerfile.airflow        # Custom Airflow Build Configuration
+├── docker-compose.yml        # Multi-container service infrastructure
+├── requirements.txt          # Shared Python dependencies
+├── .env.example              # Secure environment template
+└── README.md                 # Project Documentation
+```
 ## ⚙️ Prerequisites
 
 - Docker and Docker Compose installed
@@ -49,7 +77,7 @@ This setup mimics the structure and behavior of a production-ready streaming sys
 
 ---
 
-## 🔐 Environment Configuration
+## Environment Configuration
 
 Create a `.env` file in the root of your project.
 
@@ -95,11 +123,11 @@ _AIRFLOW_WWW_USER_PASSWORD= xxxxxx
 PGADMIN_DEFAULT_EMAIL=admin@admin.com
 PGADMIN_DEFAULT_PASSWORD= xxxxxxx
 
-
-🛡️ Make sure to add .env to your .gitignore:
+```
+Make sure to add .env to your .gitignore:
 echo ".env" >> .gitignore
 
-🚀 Getting Started
+ ### Getting Started
 1. Clone the Repo
 git clone https://github.com/yourusername/yourproject.git
 cd yourproject
@@ -118,7 +146,7 @@ docker-compose up --build
 
 The first build might take a few minutes.
 
-🌐 Access Services
+### Access Services
 | Service          | URL                                            |
 | ---------------- | ---------------------------------------------- |
 | Airflow UI       | [http://localhost:8080](http://localhost:8080) |
@@ -131,36 +159,28 @@ Username: xxxxxxxxx  --
 Password: xxxxxxxxx
 
 
-📊 Data Flow Summary
+### Data Flow Summary
 Kafka Producer fetches real-time stock data and sends it to stock_prices_topic
 
 Kafka Consumer reads messages from the topic and writes them to PostgreSQL
 
 Airflow DAG orchestrates, schedules, and monitors the process
 
-📌 Notes
+### Notes
 The .env file is used across all services (Airflow, Kafka, PostgreSQL, etc.)
 
 Make sure ports 8080, 5432, 5050, and 6379 are not blocked on your machine.
 
 DAGs are mounted from the dags/ folder.
 
-🧹 Cleanup
+### Cleanup
 To stop and remove containers, networks, and volumes:
 docker-compose down -v
 
 License
 MIT License. Feel free to fork and modify.
 
-🧠 Credits
-Built with ❤️ using:
+### Credits
+Built using:
 
-Apache Airflow
-
-Apache Kafka
-
-Redis
-
-PostgreSQL
-
-Docker
+Apache Airflow, Apache Kafka, Redis, PostgreSQL, Docker
