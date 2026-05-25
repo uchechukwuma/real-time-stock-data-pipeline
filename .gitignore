@@ -11,6 +11,11 @@
 **/.airflow/
 logs/
 
+# Local Airflow home artifacts
+airflow/
+*.cfg
+*.db
+
 # Python files
 *.pyc
 *.pyo
